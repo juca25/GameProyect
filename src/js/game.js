@@ -21,13 +21,19 @@ const Game = {
     delay: undefined,
     counter: 0,
     secs: 0,
-    difficulty: 180,
+    difficulty: 120,
+    finalScreen: undefined,
+    // card : document.getElementById("card"),
+    // cardScore : document.getElementById("card-score"),
     
     
     init(){
         this.canvas = document.getElementById("canvas")
         this.timer = document.querySelector('span')
         this.ctx = this.canvas.getContext("2d")
+
+        this.finalScreen = new Image()
+        this.finalScreen.src = "src/img/gameOver.jpg"
         
         this.setDimensions()
         this.start()
@@ -109,6 +115,7 @@ const Game = {
                 this.canScore = false
                 this.score++  
             }
+            // -
         })
 
         this.platforms.forEach(platform => {
@@ -120,6 +127,7 @@ const Game = {
             ) {
               console.log("HAY PT")
              this.player.velY = 0
+             this.player.canJump = true
             }
         })
     },
@@ -137,7 +145,7 @@ const Game = {
     if(this.scoreIncrement +10 === this.score){
         this.scoreIncrement = this.score
         this.enemySpeed++
-        this.presetTime >= 100 ? this.presetTime -= 100 : this.presetTime = this.presetTime/2
+        this.presetTime >= 100 ? this.presetTime -= 100 : this.presetTime = this.presetTime/1.5
         // incrementa la velocidad de los bloques
         this.obstacles.forEach(block => {
             block.slideSpeed = this.enemySpeed
@@ -146,39 +154,42 @@ const Game = {
     },
 
     generateObstacles (){
-    this.delay = this.randomNumberInterval(this.presetTime)
-    this.obstacles.push(new Obstacle(this.ctx, 50,50, this.enemySpeed))
-    this.timeout(this.generateObstacles, this.delay) 
+        this.delay = this.randomNumberInterval(this.presetTime)
+        this.obstacles.push(new Obstacle(this.ctx, 50,50, this.enemySpeed))
+        this.timeout(this.generateObstacles, this.delay) 
     },
 
     generatePlatforms(){
-    this.platforms.push(new Platform(this.ctx))
+        this.platforms.push(new Platform(this.ctx))
     },
 
     drawScore () {
-     this.timer.innerText = this.score
+        this.timer.innerText = this.score
     },
 
     randomNumberInterval(timeInterval){
-    let returnTime = timeInterval
-    return (Math.random() - 0.5) ?  returnTime += this.getRandomNumber(this.presetTime/3, this.presetTime*1.5) 
-    : returnTime -= this.getRandomNumber(this.presetTime/5, this.presetTime/2)
+        let returnTime = timeInterval
+        return (Math.random() - 0.5) ?  returnTime += this.getRandomNumber(this.presetTime/3, this.presetTime*1.5) 
+        : returnTime -= this.getRandomNumber(this.presetTime/5, this.presetTime/2)
     },
 
     getRandomNumber(min, max){
-    return Math.floor(Math.random()*(max-min+1))+min
+        return Math.floor(Math.random()*(max-min+1))+min
     },
 
     playerCollision(player, obstacle){
     
-    let s2 = Object.assign(Object.create(Object.getPrototypeOf(obstacle)), obstacle)
-    
-    if (player.x < s2.x + s2.width && 
-        player.x + player.size > s2.x && player.y < s2.y + s2.height &&
-         player.y + player.size > s2.y){
-         clearInterval(this.animationId)
-         console.log('juegoTerminado')
-    }
+        let s2 = Object.assign(Object.create(Object.getPrototypeOf(obstacle)), obstacle)
+        
+        if (player.x < s2.x + s2.width && 
+            player.x + player.size > s2.x && player.y < s2.y + s2.height &&
+            player.y + player.size > s2.y){
+            clearInterval(this.animationId)
+            this.clear()
+            this.ctx.drawImage(this.finalScreen, 0, 0, this.width, this.height)
+            
+            console.log('juegoTerminado')
+        }
     },
     
     isPastBlock(player, block){
@@ -195,22 +206,27 @@ const Game = {
     }, 
     
     setEventListener(){
-        addEventListener('keydown', ({code}) => {
+        document.addEventListener('keydown', ({code}) => {
             switch (code) {
                 case 'ArrowUp':
-                    this.player.velY -= 12
+                    this.player.velY -= 10
                     this.player.arrowPressed = true
                     this.canScore = true
+                    this.player.canJump = false
                     break
                 case 'Space':
-                    this.player.velY -= 12
+                    this.player.velY -= 10
                     this.player.spacePressed = true
                     this.canScore = true
+                    this.player.canJump = false
                     console.log('espacio')
                     break
             }
         })
     }
+    // moveUp(){
+        
+    // }
 }
 
 

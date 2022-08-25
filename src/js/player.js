@@ -12,7 +12,7 @@ class Char {
        this.velY = 0
        this.gravity = 0.4
     //    this.shouldJump = false
-       this.jumpCounter = 0
+       this.canJump = true
        // SQ rotation & Spin
        // set initial value to be zero = no rotation
     //    this.spin = 0
@@ -36,4 +36,5 @@ class Char {
         this.velY += this.gravity
         else this.velY = 0
     }
+
 }
